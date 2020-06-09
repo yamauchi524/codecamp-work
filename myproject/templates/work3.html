@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+   <meta charset="UTF-8">
+   <title>課題3</title>
+</head>
+<body>
+    <h2>じゃんけん勝負</h2>
+    {% if jibun %}
+    <p>自分：{{jibun}}</p>
+    {% endif %}
+
+    {% if aite %}
+    <p>相手：{{aite}}</p>
+    {% endif %}
+
+    {% if result %}
+    <p>結果：{{result}}</p> 
+    {% endif %}
+
+    <form method="post">
+        <label><input type="radio" name="jibun" value="グー" {{'checked' if jibun == 'グー'}}>グー
+            <input type="radio" name="jibun" value="チョキ" {{'checked' if jibun == 'チョキ'}}>チョキ
+            <input type="radio" name="jibun" value="パー" {{'checked' if jibun == 'パー'}}>パー </label> <br>
+        <label><input type="submit" value="勝負!!"></label>
+    </form>
+
+
+</body>
+</html>
