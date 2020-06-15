@@ -22,19 +22,20 @@ def challenge_mysql_insert():
     price = ""
 
     #priceが整数か否かを判定する
-    result = ""
+    result = "追加成功"
 
     if "name" in request.args.keys():
         name = request.args.get("name")
 
     if "price" in request.args.keys():
         price = request.args.get("price")
+        #request.args.getで取得する値は全て文字列になっている！
         
         #priceが文字列か否かを判定
-        if type(price) is int == True:
-            result = "追加成功" 
-        else:
-            result = "追加失敗"
+        #if type(price) is int == True:
+        #    result = "追加成功" 
+        #else:
+        #    result = "追加失敗"
 
     try:
         cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
@@ -44,12 +45,17 @@ def challenge_mysql_insert():
         if name == "" and price == "":
             query = 'SELECT goods_name, price FROM goods_table'
             cursor.execute(query)
+            result = ""
 
         else:
-            query = "INSERT INTO goods_table(goods_name, price) VALUES('" + name + "'," + price +")"
-            cursor.execute(query)
-            cnx.commit() # この処理が無いと変更が反映されません！
-
+            try:
+                query = "INSERT INTO goods_table(goods_name, price) VALUES('" + name + "'," + price +")"
+                cursor.execute(query)
+                cnx.commit() # この処理が無いと変更が反映されません！
+            except mysql.connector.Error as err:
+                print(err)
+                result = "追加失敗"
+            
             query = 'SELECT goods_name, price FROM goods_table'
             cursor.execute(query)
 
