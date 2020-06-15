@@ -20,25 +20,38 @@ def challenge_mysql_insert():
     #入力した商品名と価格を取得
     name = ""
     price = ""
+
+    #priceが整数か否かを判定する
+    result = ""
+
     if "name" in request.args.keys():
         name = request.args.get("name")
-        print(name)
 
     if "price" in request.args.keys():
         price = request.args.get("price")
-        print(price)
+        
+        #priceが文字列か否かを判定
+        if type(price) is int == True:
+            result = "追加成功" 
+        else:
+            result = "追加失敗"
 
     try:
         cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
         cursor = cnx.cursor()
 
+        #初期画面
         if name == "" and price == "":
             query = 'SELECT goods_name, price FROM goods_table'
             cursor.execute(query)
+
         else:
             query = "INSERT INTO goods_table(goods_name, price) VALUES('" + name + "'," + price +")"
             cursor.execute(query)
             cnx.commit() # この処理が無いと変更が反映されません！
+
+            query = 'SELECT goods_name, price FROM goods_table'
+            cursor.execute(query)
 
         goods = []
         for (name, price) in cursor:
@@ -55,5 +68,5 @@ def challenge_mysql_insert():
     else:
         cnx.close()
 
-    return render_template("mysql_work2.html", goods = goods)
+    return render_template("mysql_work2.html", goods=goods, result=result)
 
