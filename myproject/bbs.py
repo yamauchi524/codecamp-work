@@ -15,7 +15,7 @@ import datetime
 #自分をappという名称でインスタンス化
 app = Flask(__name__)
 
-@app.route("/bbs")
+@app.route("/bbs", methods=["POST"])
 def mysql_bbs():
     # import部分は省略
     host = 'localhost' # データベースのホスト名又はIPアドレス
@@ -52,7 +52,7 @@ def mysql_bbs():
         #文字が入力されていない場合
         if name == "" or price == "":
             cursor.execute(query)
-            result = "名前とコメントを入力してください。"
+            result = ""
 
         else:
             try:
@@ -81,5 +81,5 @@ def mysql_bbs():
     else:
         cnx.close()
 
-    return render_template("mysql_work2.html", bbs=bbs, result=result)
+    return render_template("bbs.html", bbs=bbs, result=result)
 
