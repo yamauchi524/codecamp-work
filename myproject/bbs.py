@@ -15,8 +15,40 @@ import datetime
 #自分をappという名称でインスタンス化
 app = Flask(__name__)
 
+#初期画面
+#新しく画面を開き直した時も過去のコメントが表示されるようにする
+@app.route("/bbs")
+def bbs_send():
+    host = 'localhost' # データベースのホスト名又はIPアドレス
+    username = 'root'  # MySQLのユーザ名
+    passwd   = 'Hito05hito'    # MySQLのパスワード
+    dbname   = 'my_database'    # データベース名
+
+    bbs = []
+    try:
+        cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
+        cursor = cnx.cursor()
+        query = 'SELECT bbs_name, comment, bbs_date FROM bbs_table'
+        cursor.execute(query)
+
+        for (name, comment, date) in cursor:
+            thread = {"name": name, "comment":comment, "date":date}
+            bbs.append(thread)
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("ユーザ名かパスワードに問題があります。")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("データベースが存在しません。")
+        else:
+            print(err)
+    else:
+        cnx.close()
+    return render_template('bbs.html', bbs=bbs)
+
+#出力画面
 @app.route("/bbs", methods=["POST"])
-def mysql_bbs():
+def bbs_receive():
     # import部分は省略
     host = 'localhost' # データベースのホスト名又はIPアドレス
     username = 'root'  # MySQLのユーザ名
@@ -50,9 +82,9 @@ def mysql_bbs():
         query = 'SELECT bbs_name, comment, bbs_date FROM bbs_table'
 
         #文字が入力されていない場合
-        if name == "" or price == "":
+        if name == "" or comment == "":
             cursor.execute(query)
-            result = ""
+            result = "名前とコメントを入力してください。"
 
         else:
             try:
@@ -68,8 +100,8 @@ def mysql_bbs():
 
         bbs = []
         for (name, comment, date) in cursor:
-            item = {"name": name, "comment":comment, "date":date}
-            bbs.append(item)
+            thread = {"name": name, "comment":comment, "date":date}
+            bbs.append(thread)
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
